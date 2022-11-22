@@ -49,8 +49,14 @@ function getTimeoutMicros(t) {
 
 ((async function (param) {
         await WebTreeSitter$1.init();
-        new WebTreeSitter();
-        WebTreeSitter$1.Language.load("file");
+        var parser = new WebTreeSitter();
+        var rescript = WebTreeSitter$1.Language.load("file");
+        parser.setLanguage(rescript);
+        var tree = parse(parser, {
+              TAG: /* String */0,
+              _0: "let a = 1\n"
+            });
+        console.log(tree.rootNode.toString());
       })(undefined));
 
 export {

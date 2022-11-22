@@ -194,7 +194,7 @@ module Parser = {
 
 module Language = {
   @module("web-tree-sitter") @scope("Language")
-  external load: string => Parser.t = "load"
+  external load: string => Parser.language = "load"
 }
 
 @module("web-tree-sitter") external init: unit => promise<unit> = "init"
@@ -202,6 +202,7 @@ module Language = {
 
 @send external rootNode: Parser.tree => Parser.syntaxNode = "rootNode"
 @send external toString: Parser.syntaxNode => string = "toString"
+// @send external parse: (Parser.t, Parser.input) => Parser.tree = "parse"
 
 let delete = (t: Parser.t) => t.delete(.)
 let parse = (t: Parser.t, input: Parser.input) =>
@@ -223,10 +224,12 @@ let getTimeoutMicros = (t: Parser.t) => t.getTimeoutMicros(.)
     await init()
     let parser = make()
     let rescript = Language.load("file")
-    // parser->TreeSitter.setLanguage(rescript)
-    // let source = "let a = 1\n"
-    // let tree = parser->TreeSitter.parse(String(source))
+    
+    parser->setLanguage(rescript)
+    let source = "let a = 1\n"
+    let tree = parser->parse(String(source))
+    // let tree = parser.parse(. Parser.String(source))
 
-    // tree.rootNode->TreeSitter.toString->Js.log
+    tree.rootNode->toString->Js.log
   }
 )()->ignore
