@@ -9,7 +9,7 @@ const artifact_dir = path.join(__dirname, folder)
 
 if (!fs.existsSync(artifact_dir)) {
   child_process.execSync(`mkdir -p ${artifact_dir}`)
-  child_process.execSync(`git clone --depth 1 git@github.com:nkrkv/tree-sitter-rescript.git ${artifact_dir}`)
+  child_process.execSync(`git clone --depth 1 https://github.com/nkrkv/tree-sitter-rescript ${artifact_dir}`)
 } else {
   console.warn(`Folder already exists`)
 }
