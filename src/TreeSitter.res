@@ -96,7 +96,7 @@ module Parser = {
 
   module Language = {
     @module("web-tree-sitter") @scope("Language")
-    external load: string => language = "load"
+    external load: string => promise<language> = "load"
     @send @return(nullable)
     external fieldNameForId: (language, int) => option<string> = "fieldNameForId"
     @send @return(nullable)
