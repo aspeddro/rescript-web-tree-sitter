@@ -1,12 +1,18 @@
-// (
-//   async () => {
-//     await TreeSitter.make.init(.)
-//     let parser = TreeSitter.new
-//     // let rescript = TreeSitter.Parser.Language.load("file.wasm")
-//     // parser->TreeSitter.setLanguage(rescript)
-//     // let source = "let a = 1\n"
-//     // let tree = parser->TreeSitter.parse(String(source))
+(
+  async () => {
+    open TreeSitter
+    await Parser.init(~moduleOptions=None)
+    let parser = Parser.make()
+    let rescript = Parser.Language.load("file")
 
-//     // tree.rootNode->TreeSitter.toString->Js.log
-//   }
-// )()->ignore
+    let _ = Parser.Language.fieldIdForName(rescript, "variable")
+
+    parser->Parser.setLanguage(#Some(rescript))
+    let code = "let a = 1\n"
+    let tree = parser->Parser.parse(~input=#Str(code), ~previousTree=None, ~options=None)
+
+    tree.rootNode->Parser.SyntaxNode.hasError->Js.log
+
+    tree.rootNode->Parser.SyntaxNode.toString->Js.log
+  }
+)()->ignore

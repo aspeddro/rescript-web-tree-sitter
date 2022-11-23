@@ -1,81 +1,5 @@
-// type rec tree = {
-//   // TODO:
-//   rootNode: syntaxNode,
-//   copy: (. unit) => tree,
-//   getLanguage: (. unit) => language,
-// }
-// and syntaxNode = {
-//   id: int,
-//   tree: tree,
-//   text: string,
-//   @as("type") type_: string,
-//   startPosition: point,
-//   endPosition: point,
-//   startIndex: int,
-//   endIndex: int,
-//   parent: option<syntaxNode>,
-//   children: array<syntaxNode>,
-//   namedChildren: array<syntaxNode>,
-//   childCount: int,
-//   namedChildrenCount: int,
-//   firstChild: option<syntaxNode>,
-//   firstNameChild: option<syntaxNode>,
-//   lastChild: option<syntaxNode>,
-//   lastNamedChild: option<syntaxNode>,
-//   nextSiblings: option<syntaxNode>,
-//   nextNamedSibling: option<syntaxNode>,
-//   previousSibling: option<syntaxNode>,
-//   previousNamedSibling: option<syntaxNode>,
-//   hasChanges: (. unit) => bool,
-//   hasError: (. unit) => bool,
-//   equals: (. syntaxNode) => bool,
-//   isMissing: (. unit) => bool,
-//   isNamed: (. unit) => bool,
-//   toString: (. unit) => string,
-//   child: (. int) => option<syntaxNode>,
-//   walk: (. unit) => treeCursor,
-// }
-// and treeCursor = {
-//   nodeType: string,
-//   nodeTypeId: int,
-//   nodeText: string,
-//   nodeId: int,
-//   nodeIsNamed: bool,
-//   nodeIsMissing: bool,
-//   startPosition: point,
-//   endPosition: point,
-//   startIndex: int,
-//   endIndex: int,
-// }
-// and language = {
-//   load: (. string) => promise<language>,
-//   version: int,
-//   fieldCount: int,
-//   nodeTypeCount: int,
-//   query: (. string) => query,
-// }
-// and queryCapture = {
-//   name: string,
-//   node: syntaxNode,
-// }
-// and queryMatch = {
-//   pattern: int,
-//   captures: array<queryCapture>,
-// }
-// and operand = {name: string, @as("type") type_: string}
-// and predicateResult = {
-//   operator: string,
-//   operands: array<operand>,
-// }
-// and query = {
-//   captureNames: array<string>,
-//   delete: (. unit) => unit,
-//   matches: (. syntaxNode, point, point) => array<queryMatch>,
-//   captures: (. syntaxNode, point, point) => array<queryCapture>,
-//   predicatesForPattern: (. int) => array<predicateResult>,
-// }
-
 module Parser = {
+  type t
   type point = {row: int, column: int}
   type range = {
     startPosition: point,
@@ -84,7 +8,6 @@ module Parser = {
     endIndex: int,
   }
   type options = {includeRanges?: array<range>}
-
   type edit = {
     startIndex: int,
     oldEndIndex: int,
@@ -93,8 +16,8 @@ module Parser = {
     oldEndPosition: point,
     newEndPosition: point,
   }
-  and logger = (string, {.}, string) => unit
-  and input = String(string) | Input({startIndex: int, startPoint?: point, endIndex?: int})
+  and logger = (string, {.}, [#parse | #lex]) => unit
+  and input = (. int, option<point>, option<int>) => option<string>
   type treeCursor = {
     nodeType: string,
     nodeTypeId: int,
@@ -108,7 +31,6 @@ module Parser = {
     endIndex: int,
   }
   type operand = {name: string, @as("type") type_: string}
-
   type rec syntaxNode = {
     id: int,
     tree: tree,
@@ -131,29 +53,14 @@ module Parser = {
     nextNamedSibling: option<syntaxNode>,
     previousSibling: option<syntaxNode>,
     previousNamedSibling: option<syntaxNode>,
-    hasChanges: (. unit) => bool,
-    hasError: (. unit) => bool,
-    equals: (. syntaxNode) => bool,
-    isMissing: (. unit) => bool,
-    isNamed: (. unit) => bool,
-    toString: (. unit) => string,
-    child: (. int) => option<syntaxNode>,
-    walk: (. unit) => treeCursor,
   }
 
-  and tree = {
-    // TODO:
-    rootNode: syntaxNode,
-    copy: (. unit) => tree,
-    getLanguage: (. unit) => language,
-  }
+  and tree = {rootNode: syntaxNode}
 
   and language = {
-    load: (. string) => promise<language>,
     version: int,
     fieldCount: int,
     nodeTypeCount: int,
-    query: (. string) => query,
   }
   and queryCapture = {
     name: string,
@@ -167,69 +74,133 @@ module Parser = {
     operator: string,
     operands: array<operand>,
   }
-  and query = {
-    captureNames: array<string>,
-    delete: (. unit) => unit,
-    matches: (. syntaxNode, point, point) => array<queryMatch>,
-    captures: (. syntaxNode, point, point) => array<queryCapture>,
-    predicatesForPattern: (. int) => array<predicateResult>,
+  and query = {captureNames: array<string>}
+
+  @module("web-tree-sitter") external init: (~moduleOptions: option<{..}>) => promise<unit> = "init"
+  @new @module("web-tree-sitter") external make: unit => t = "default"
+  @send
+  external parse: (
+    t,
+    ~input: @unwrap [#Str(string) | #Input(input)],
+    ~previousTree: option<tree>,
+    ~options: option<options>,
+  ) => tree = "parse"
+  @send external delete: t => unit = "delete"
+  @send external reset: t => unit = "reset"
+  @send external getLanguage: t => language = "getLanguage"
+  @send external setLanguage: (t, @unwrap [#Some(language) | #None(unit)]) => unit = "setLanguage"
+  @send external getLogger: t => logger = "getLogger"
+  @send external setLogger: (t, @unwrap [#Some(logger) | #None(unit)]) => unit = "setLogger"
+  @send external setTimeoutMicros: (t, int) => unit = "setTimeoutMicros"
+  @send external getTimeoutMicros: t => unit = "getTimeoutMicros"
+
+  module Language = {
+    @module("web-tree-sitter") @scope("Language")
+    external load: string => language = "load"
+    @send @return(nullable)
+    external fieldNameForId: (language, int) => option<string> = "fieldNameForId"
+    @send @return(nullable)
+    external fieldIdForName: (language, string) => option<string> = "fieldIdForName"
+    @send external idForNodeType: (language, string, bool) => int = "idForNodeType"
+    @send @return(nullable)
+    external nodeTypeForId: (language, int) => option<string> = "nodeTypeForId"
+    @send external nodeTypeIsNamed: (language, int) => bool = "nodeTypeIsNamed"
+    @send external nodeTypeIsVisible: (language, int) => bool = "nodeTypeIsVisible"
+    @send external query: (language, string) => query = "query"
   }
 
-  type t = {
-    // TODO: support moduleOptions
-    init: (. unit) => promise<unit>,
-    delete: (. unit) => unit,
-    // TODO: add more params
-    parse: (. string) => tree,
-    reset: (. unit) => unit,
-    getLanguage: (. unit) => language,
-    setLanguage: (. language) => unit,
-    getLogger: (. unit) => logger,
-    // TODO: opt param
-    setLogger: (. logger) => unit,
-    setTimeoutMicros: (. int) => unit,
-    getTimeoutMicros: (. unit) => int,
+  module SyntaxNode = {
+    @send external hasChanges: syntaxNode => bool = "hasChanges"
+    @send external hasError: syntaxNode => bool = "hasError"
+    @send external equals: syntaxNode => bool = "equals"
+    @send external isMissing: syntaxNode => bool = "isMissing"
+    @send external isNamed: syntaxNode => bool = "isNamed"
+    @send external toString: syntaxNode => string = "toString"
+    @send @return(nullable) external child: (syntaxNode, int) => option<syntaxNode> = "child"
+    @send @return(nullable)
+    external namedChild: (syntaxNode, int) => option<syntaxNode> = "namedChild"
+    @send @return(nullable)
+    external childForFieldID: (syntaxNode, int) => option<syntaxNode> = "childForFieldID"
+    @send @return(nullable)
+    external childForFieldName: (syntaxNode, string) => option<syntaxNode> = "childForFieldName"
+
+    @send
+    external descendantForIndex: (
+      syntaxNode,
+      ~startIndex: int,
+      ~endIndex: option<int>,
+    ) => syntaxNode = "descendantForIndex"
+    @send
+    external descendantOfType: (
+      syntaxNode,
+      @unwrap [#Type(string) | #Types(array<string>)],
+      ~startPosition: option<point>,
+      ~endPosition: option<point>,
+    ) => array<syntaxNode> = "descendantOfType"
+    @send
+    external namedDescendantForIndex: (
+      syntaxNode,
+      ~startIndex: int,
+      ~endIndex: option<int>,
+    ) => syntaxNode = "namedDescendantForIndex"
+
+    @send
+    external descendantForPosition: (
+      syntaxNode,
+      ~startPosition: point,
+      ~endPosition: option<point>,
+    ) => syntaxNode = "descendantForPosition"
+
+    @send
+    external namedDescendantForPosition: (
+      syntaxNode,
+      ~startPosition: point,
+      ~endPosition: option<point>,
+    ) => syntaxNode = "namedDescendantForPosition"
+
+    @send external walk: syntaxNode => treeCursor = "walk"
+  }
+
+  module TreeCursor = {
+    @send external reset: (treeCursor, syntaxNode) => unit = "reset"
+    @send external delete: treeCursor => unit = "delete"
+    @send external currentNode: treeCursor => syntaxNode = "currentNode"
+    @send external currentFieldId: treeCursor => int = "currentFieldId"
+    @send external currentFieldName: treeCursor => string = "currentFieldName"
+    @send external gotoParent: treeCursor => bool = "gotoParent"
+    @send external gotoFirstChild: treeCursor => bool = "gotoFirstChild"
+    @send external gotoFirstChildForIndex: (treeCursor, int) => bool = "gotoFirstChildForIndex"
+    @send external gotoNextSibling: treeCursor => bool = "gotoNextSibling"
+  }
+
+  module Tree = {
+    @send external copy: tree => tree = "copy"
+    @send external delete: tree => unit = "delete"
+    @send external edit: (tree, edit) => tree = "edit"
+    @send external walk: tree => treeCursor = "walk"
+    @send external getChangedRanges: (tree, tree) => array<range> = "getChangedRanges"
+    @send external getEditedRange: (tree, tree) => range = "getEditedRange"
+    @send external getLanguage: tree => language = "getLanguage"
+  }
+
+  module Query = {
+    @send external delete: query => unit = "delete"
+    @send
+    external matches: (
+      query,
+      syntaxNode,
+      ~startPosition: option<point>,
+      ~endPosition: option<point>,
+    ) => array<queryMatch> = "matches"
+    @send
+    external captures: (
+      query,
+      syntaxNode,
+      ~startPosition: option<point>,
+      ~endPosition: option<point>,
+    ) => array<queryCapture> = "captures"
+    @send
+    external predicatesForPattern: (query, syntaxNode, int) => array<predicateResult> =
+      "predicatesForPattern"
   }
 }
-
-module Language = {
-  @module("web-tree-sitter") @scope("Language")
-  external load: string => Parser.language = "load"
-}
-
-@module("web-tree-sitter") external init: unit => promise<unit> = "init"
-@new @module("web-tree-sitter") external make: unit => Parser.t = "default"
-
-@send external rootNode: Parser.tree => Parser.syntaxNode = "rootNode"
-@send external toString: Parser.syntaxNode => string = "toString"
-// @send external parse: (Parser.t, Parser.input) => Parser.tree = "parse"
-
-let delete = (t: Parser.t) => t.delete(.)
-let parse = (t: Parser.t, input: Parser.input) =>
-  switch input {
-  | String(s) => t.parse(. s)
-  | _ => t.parse(. "Js.log")
-  }
-let reset = (t: Parser.t) => t.reset(.)
-let getLanguage = (t: Parser.t) => t.getLanguage
-let setLanguage = (t: Parser.t, language: Parser.language) => t.setLanguage(. language)
-let getLogger = (t: Parser.t) => t.getLogger(.)
-let setLogger = (t: Parser.t, params) => t.setLogger(. params)
-let setTimeoutMicros = (t: Parser.t, value) => t.setTimeoutMicros(. value)
-let getTimeoutMicros = (t: Parser.t) => t.getTimeoutMicros(.)
-
-
-(
-  async () => {
-    await init()
-    let parser = make()
-    let rescript = Language.load("file")
-    
-    parser->setLanguage(rescript)
-    let source = "let a = 1\n"
-    let tree = parser->parse(String(source))
-    // let tree = parser.parse(. Parser.String(source))
-
-    tree.rootNode->toString->Js.log
-  }
-)()->ignore

@@ -3,73 +3,36 @@
 import WebTreeSitter from "web-tree-sitter";
 import * as WebTreeSitter$1 from "web-tree-sitter";
 
-var Parser = {};
-
 var Language = {};
 
-function $$delete(t) {
-  t.delete();
-}
+var SyntaxNode = {};
 
-function parse(t, input) {
-  if (input.TAG === /* String */0) {
-    return t.parse(input._0);
-  } else {
-    return t.parse("Js.log");
-  }
-}
+var TreeCursor = {};
 
-function reset(t) {
-  t.reset();
-}
+var Tree = {};
 
-function getLanguage(t) {
-  return t.getLanguage;
-}
+var Query = {};
 
-function setLanguage(t, language) {
-  t.setLanguage(language);
-}
-
-function getLogger(t) {
-  return t.getLogger();
-}
-
-function setLogger(t, params) {
-  t.setLogger(params);
-}
-
-function setTimeoutMicros(t, value) {
-  t.setTimeoutMicros(value);
-}
-
-function getTimeoutMicros(t) {
-  return t.getTimeoutMicros();
-}
+var Parser = {
+  Language: Language,
+  SyntaxNode: SyntaxNode,
+  TreeCursor: TreeCursor,
+  Tree: Tree,
+  Query: Query
+};
 
 ((async function (param) {
-        await WebTreeSitter$1.init();
+        await WebTreeSitter$1.init(undefined);
         var parser = new WebTreeSitter();
         var rescript = WebTreeSitter$1.Language.load("file");
+        rescript.fieldIdForName("variable");
         parser.setLanguage(rescript);
-        var tree = parse(parser, {
-              TAG: /* String */0,
-              _0: "let a = 1\n"
-            });
+        var tree = parser.parse("let a = 1\n", undefined, undefined);
+        console.log(tree.rootNode.hasError());
         console.log(tree.rootNode.toString());
       })(undefined));
 
 export {
   Parser ,
-  Language ,
-  $$delete ,
-  parse ,
-  reset ,
-  getLanguage ,
-  setLanguage ,
-  getLogger ,
-  setLogger ,
-  setTimeoutMicros ,
-  getTimeoutMicros ,
 }
 /*  Not a pure module */
