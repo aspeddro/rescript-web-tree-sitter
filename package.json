@@ -6,7 +6,7 @@
     "clean": "rescript clean",
     "build": "rescript build",
     "watch": "rescript build -w -with-deps",
-    "buildwasm": "node scripts/wasm.mjs",
+    "prepare": "node test/prepare.bs.mjs",
     "test": "node test/test.bs.mjs"
   },
   "keywords": [

@@ -16,7 +16,7 @@ async function loadFile(param) {
         var rescript = await WebTreeSitter$1.default.Language.load(wasm_file);
         parser.setLanguage(rescript);
         var tree = parser.parse("let a = 1\n", undefined, undefined);
-        Assert.equal(tree.rootNode.toString(), "source_file (let_binding (value_identifier) (number)))");
+        Assert.equal(tree.rootNode.toString(), "(source_file (let_binding (value_identifier) (number)))");
       })(undefined));
 
 export {
