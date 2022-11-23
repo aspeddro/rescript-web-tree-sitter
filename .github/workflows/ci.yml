@@ -21,8 +21,8 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Prepare
-        run: npm run prepare
+      - name: Build Wasm
+        run: npm run buildwasm
 
       - name: Tests
         run: npm run tests
