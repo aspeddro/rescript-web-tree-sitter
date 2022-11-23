@@ -22,8 +22,7 @@
   "license": "MIT",
   "devDependencies": {
     "rescript": "^10.1.0-rc.5",
-    "rescript-nodejs": "^14.3.1",
-    "tree-sitter": "^0.20.1"
+    "rescript-nodejs": "^14.3.1"
   },
   "dependencies": {
     "web-tree-sitter": "^0.20.7"
