@@ -12,6 +12,10 @@
     "tree-sitter",
     "bindinds"
   ],
+  "files": [
+    "src",
+    "bsconfig.json"
+  ],
   "author": "Pedro Castro",
   "license": "MIT",
   "devDependencies": {

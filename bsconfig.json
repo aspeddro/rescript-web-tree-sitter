@@ -13,8 +13,7 @@
     }
   ],
   "package-specs": {
-    "module": "es6",
-    "in-source": true
+    "module": "es6"
   },
   "bs-dev-dependencies": [
     "rescript-test"
