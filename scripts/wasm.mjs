@@ -23,8 +23,8 @@ process.chdir(artifact_dir)
 console.log(`Changed dir to: ${process.cwd()}`)
 
 if (!fs.existsSync(`${path.join(process.cwd(), 'node_modules')}`)) {
-  console.log(`Running npm install`)
-  child_process.exec(`npm install`)
+  console.log(`Running yarn install`)
+  child_process.exec(`yarn`)
 } else {
   console.warn('node_modules already exists')
 }
