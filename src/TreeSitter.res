@@ -1,3 +1,4 @@
+// API: https://github.com/tree-sitter/tree-sitter/blob/870fb8772f3e47b5aef4c7000a78d61f3aa2b005/lib/binding_web/tree-sitter-web.d.ts
 module Parser = {
   type t
   type point = {row: int, column: int}
@@ -76,7 +77,7 @@ module Parser = {
   }
   and query = {captureNames: array<string>}
 
-  @module("web-tree-sitter") external init: (~moduleOptions: option<{..}>) => promise<unit> = "init"
+  @module("web-tree-sitter") @scope("default") external init: (~moduleOptions: option<{..}>) => promise<unit> = "init"
   @new @module("web-tree-sitter") external make: unit => t = "default"
   @send
   external parse: (
@@ -95,7 +96,7 @@ module Parser = {
   @send external getTimeoutMicros: t => unit = "getTimeoutMicros"
 
   module Language = {
-    @module("web-tree-sitter") @scope("Language")
+    @module("web-tree-sitter") @scope(("default", "Language"))
     external load: string => promise<language> = "load"
     @send @return(nullable)
     external fieldNameForId: (language, int) => option<string> = "fieldNameForId"

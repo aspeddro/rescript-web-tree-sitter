@@ -5,7 +5,9 @@
   "scripts": {
     "clean": "rescript clean",
     "build": "rescript build",
-    "watch": "rescript build -w"
+    "watch": "rescript build -w -with-deps",
+    "buildwasm": "node scripts/wasm.mjs",
+    "test": "node test/test.bs.mjs"
   },
   "keywords": [
     "ReScript",
@@ -20,7 +22,8 @@
   "license": "MIT",
   "devDependencies": {
     "rescript": "^10.1.0-rc.5",
-    "rescript-test": "^4.0.0"
+    "rescript-nodejs": "^14.3.1",
+    "tree-sitter": "^0.20.1"
   },
   "dependencies": {
     "web-tree-sitter": "^0.20.7"
