@@ -7,7 +7,7 @@
     "build": "rescript build",
     "watch": "rescript build -w -with-deps",
     "prepare": "node test/prepare.bs.mjs",
-    "test": "node test/test.bs.mjs"
+    "tests": "node test/test.bs.mjs"
   },
   "keywords": [
     "ReScript",
