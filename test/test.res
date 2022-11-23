@@ -18,6 +18,6 @@ let loadFile = async () => {
 
     tree.rootNode
     ->Parser.SyntaxNode.toString
-    ->NodeJs.Assert.equal("source_file (let_binding (value_identifier) (number)))")
+    ->NodeJs.Assert.equal("(source_file (let_binding (value_identifier) (number)))")
   }
 )()->ignore
