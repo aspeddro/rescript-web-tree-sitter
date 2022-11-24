@@ -14,7 +14,7 @@
   ],
   "package-specs": {
     "module": "es6",
-    "in-source": true
+    "in-source": false
   },
   "bs-dev-dependencies": [
     "rescript-nodejs"

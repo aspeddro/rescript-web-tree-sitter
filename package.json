@@ -1,13 +1,13 @@
 {
   "name": "rescript-web-tree-sitter",
-  "description": "ReScript bindins to web tree-sitter",
+  "description": "ReScript bindings to web tree-sitter",
   "version": "0.1.0",
   "scripts": {
     "clean": "rescript clean",
     "build": "rescript build",
     "watch": "rescript build -w -with-deps",
-    "buildwasm": "node test/buildwasm.bs.mjs",
-    "tests": "node test/test.bs.mjs"
+    "buildwasm": "node lib/es6/test/buildwasm.bs.mjs",
+    "test": "node lib/es6/test/test.bs.mjs"
   },
   "keywords": [
     "ReScript",

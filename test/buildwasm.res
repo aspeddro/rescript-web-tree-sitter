@@ -5,6 +5,11 @@ let folder = `artifact`
 let dirname = Path.join([Process.cwd(process)])
 let artifact_dir = Path.join2(dirname, folder)
 
+if Fs.existsSync(Path.join2(artifact_dir, "tree-sitter-rescript.wasm")) {
+  Js.log("tree-sitter-rescript.wasm file already exists")
+  process->Process.exit()->ignore
+}
+
 if !Fs.existsSync(artifact_dir) {
   ChildProcess.execSync(`mkdir -p ${artifact_dir}`)->ignore
   ChildProcess.execSync(
@@ -12,11 +17,6 @@ if !Fs.existsSync(artifact_dir) {
   )->ignore
 } else {
   Js.log(`Folder ${artifact_dir} already exists`)
-}
-
-if Fs.existsSync(Path.join2(artifact_dir, "tree-sitter-rescript.wasm")) {
-  Js.log("tree-sitter-rescript.wasm file already exists")
-  process->Process.exit()->ignore
 }
 
 process->Process.chdir(artifact_dir)
