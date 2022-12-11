@@ -6,13 +6,14 @@
     "clean": "rescript clean",
     "build": "rescript build",
     "watch": "rescript build -w -with-deps",
+    "format": "rescript format -all",
     "buildwasm": "node lib/es6/test/buildwasm.bs.mjs",
     "test": "node lib/es6/test/test.bs.mjs"
   },
   "keywords": [
     "ReScript",
     "tree-sitter",
-    "bindinds"
+    "bindings"
   ],
   "files": [
     "src",

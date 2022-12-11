@@ -41,19 +41,19 @@ module Parser = {
     endPosition: point,
     startIndex: int,
     endIndex: int,
-    parent: option<syntaxNode>,
+    parent: Js.Nullable.t<syntaxNode>,
     children: array<syntaxNode>,
     namedChildren: array<syntaxNode>,
     childCount: int,
     namedChildrenCount: int,
-    firstChild: option<syntaxNode>,
-    firstNameChild: option<syntaxNode>,
-    lastChild: option<syntaxNode>,
-    lastNamedChild: option<syntaxNode>,
-    nextSiblings: option<syntaxNode>,
-    nextNamedSibling: option<syntaxNode>,
-    previousSibling: option<syntaxNode>,
-    previousNamedSibling: option<syntaxNode>,
+    firstChild: Js.Nullable.t<syntaxNode>,
+    firstNameChild: Js.Nullable.t<syntaxNode>,
+    lastChild: Js.Nullable.t<syntaxNode>,
+    lastNamedChild: Js.Nullable.t<syntaxNode>,
+    nextSiblings: Js.Nullable.t<syntaxNode>,
+    nextNamedSibling: Js.Nullable.t<syntaxNode>,
+    previousSibling: Js.Nullable.t<syntaxNode>,
+    previousNamedSibling: Js.Nullable.t<syntaxNode>,
   }
 
   and tree = {rootNode: syntaxNode}
@@ -77,7 +77,8 @@ module Parser = {
   }
   and query = {captureNames: array<string>}
 
-  @module("web-tree-sitter") @scope("default") external init: (~moduleOptions: option<{..}>) => promise<unit> = "init"
+  @module("web-tree-sitter") @scope("default")
+  external init: (~moduleOptions: option<{..}>) => promise<unit> = "init"
   @new @module("web-tree-sitter") external make: unit => t = "default"
   @send
   external parse: (
@@ -89,9 +90,9 @@ module Parser = {
   @send external delete: t => unit = "delete"
   @send external reset: t => unit = "reset"
   @send external getLanguage: t => language = "getLanguage"
-  @send external setLanguage: (t, @unwrap [#Some(language) | #None(unit)]) => unit = "setLanguage"
+  @send external setLanguage: (t, option<language>) => unit = "setLanguage"
   @send external getLogger: t => logger = "getLogger"
-  @send external setLogger: (t, @unwrap [#Some(logger) | #None(unit)]) => unit = "setLogger"
+  @send external setLogger: (t, option<logger>) => unit = "setLogger"
   @send external setTimeoutMicros: (t, int) => unit = "setTimeoutMicros"
   @send external getTimeoutMicros: t => unit = "getTimeoutMicros"
 

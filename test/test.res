@@ -12,7 +12,7 @@ let loadFile = async () => {
 
     let rescript = await Parser.Language.load(wasm_file)
 
-    parser->Parser.setLanguage(#Some(rescript))
+    parser->Parser.setLanguage(Some(rescript))
     let code = "let a = 1\n"
     let tree = parser->Parser.parse(~input=#Str(code), ~previousTree=None, ~options=None)
 
