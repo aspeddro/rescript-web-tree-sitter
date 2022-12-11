@@ -1,4 +1,7 @@
-// API: https://github.com/tree-sitter/tree-sitter/blob/870fb8772f3e47b5aef4c7000a78d61f3aa2b005/lib/binding_web/tree-sitter-web.d.ts
+/***
+ * TreeSitter bindings to tree-sitter-web
+ * API: https://github.com/tree-sitter/tree-sitter/blob/v0.20.7/lib/binding_web/tree-sitter-web.d.ts
+*/
 module Parser = {
   type t
   type point = {row: int, column: int}
